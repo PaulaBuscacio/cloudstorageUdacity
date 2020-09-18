@@ -48,7 +48,6 @@ public class NoteController {
                 model.addAttribute("noteError", "Error adding Note");
             }
             // Update a Note
-            // TODO: Fix
         } else {
             try {
                 this.noteService.updateNote(noteId, noteTitle, noteDescription, currentUser.getUserId());

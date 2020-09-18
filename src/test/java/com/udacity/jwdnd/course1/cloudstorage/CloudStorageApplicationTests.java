@@ -183,9 +183,8 @@ class CloudStorageApplicationTests {
 		HomePage homePage = new HomePage(driver);
 
 		homePage.sendCredential(credentialUrl, credentialUsername, credentialPassword);
-
-
 	}
+
 	@Test
 	public void updateCredentialTest() {
 		driver.get("http://localhost:" + this.port + "/signup");
@@ -210,6 +209,7 @@ class CloudStorageApplicationTests {
 
 		homePage.updateCredential(newCredentialUrl, newCredentialUsername, newCredentialPassword);
 	}
+
 	@Test
 	public void deleteCredentialTest() throws InterruptedException {
 		driver.get("http://localhost:" + this.port + "/signup");
@@ -233,10 +233,7 @@ class CloudStorageApplicationTests {
 		homePage.sendCredential(credentialUrl, credentialUsername, credentialPassword);
 		Thread.sleep(3000);
 
-		//driver.get("http://localhost:" + this.port + "/home");
-		//WebElement deleteCredential = wait.until(webDriver -> webDriver.findElement(By.xpath("//a[@id='delete-credential'")));
 		homePage.deleteCredential();
-		//Assertions.assertEquals("Delete", driver.getTitle());
 
 	}
 
