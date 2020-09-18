@@ -1,30 +1,17 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class HomePage {
 
-    private static WebDriver driver;
-    //Files
-    @FindBy(id="nav-files-tab")
-    private WebElement navFiles;
-
-    @FindBy(id="fileUpload")
-    private WebElement fileUpload;
-
-    //How can I select a file?
-
-    @FindBy(id="upload-file")
-    private WebElement uploadFile;
-
-    @FindBy(id="viewFile")
-    private WebElement viewFile;
-
-    @FindBy(id="deleteFile")
-    private WebElement deleteFile;
+    private final JavascriptExecutor js;
+    private final WebDriverWait wait;
 
 
     //Notes
@@ -77,71 +64,51 @@ public class HomePage {
 
     public HomePage(WebDriver driver) {
         PageFactory.initElements(driver, this);
+        wait = new WebDriverWait(driver, 1);
+        js = (JavascriptExecutor) driver;
     }
 
     //Notes
     public void sendNote(String title, String description) {
-        this.navNote.click();
-        this.addNote.click();
-        this.noteTitle.sendKeys(title);
-        this.noteDescription.sendKeys(description);
-        this.saveNote.click();
+        js.executeScript("arguments[0].click();", addNote);
+        js.executeScript("arguments[0].value='" + title + "';", noteTitle);
+        js.executeScript("arguments[0].value='" + description + "';", noteDescription);
+        js.executeScript("arguments[0].click();", saveNote);
     }
 
     public void updateNote(String newTitle, String newDescription) {
-        this.navNote.click();
-        this.editNote.click();
-        this.noteTitle.sendKeys(newTitle);
-        this.noteDescription.sendKeys(newDescription);
-        this.saveNote.click();
+        js.executeScript("arguments[0].click();", addNote);
+        js.executeScript("arguments[0].value='" + newTitle + "';", noteTitle);
+        js.executeScript("arguments[0].value='" + newDescription + "';", noteDescription);
+        js.executeScript("arguments[0].click();", saveNote);
     }
 
     public void deleteNote() {
-        this.navNote.click();
-        this.deleteNote.click();
-    }
-
-    //Files
-    public void uploadFile(String filePath, WebDriver driver) {
-        this.navFiles.click();
-        this.fileUpload.click();
-        driver.get(filePath);
-        this.uploadFile.click();
-    }
-
-    public void viewFile() {
-        this.navFiles.click();
-        this.viewFile.click();
-    }
-
-    public void deleteFile() {
-        this.navFiles.click();
-        this.deleteFile.click();
+        WebElement noteTable = wait.until(webDriver -> webDriver.findElement(By.id("note-table")));
+        js.executeScript("arguments[0].click();", deleteNote);
     }
 
     //Credential
 
     public void sendCredential(String credentialUrl, String credentialUsername, String credentialPassword) {
-        this.navCredentials.click();
-        this.editCredential.click();
-        this.credentialUrl.sendKeys(credentialUrl);
-        this.credentialUsername.sendKeys(credentialUsername);
-        this.credentialPassword.sendKeys(credentialPassword);
-        this.credentialSubmit.click();
+        js.executeScript("arguments[0].click();", navCredentials);
+        js.executeScript("arguments[0].click();", addCredential);
+        js.executeScript("arguments[0].value='" + credentialUrl + "';", credentialUrl);
+        js.executeScript("arguments[0].value='" + credentialPassword + "';", credentialPassword);
+        js.executeScript("arguments[0].click();", credentialSubmit);
     }
 
     public void updateCredential(String newCredentialUrl, String newCredentialUsername, String newCredentialPassword) {
-        this.navCredentials.click();
-        this.addCredential.click();
-        this.credentialUrl.sendKeys(newCredentialUrl);
-        this.credentialUsername.sendKeys(newCredentialUsername);
-        this.credentialPassword.sendKeys(newCredentialPassword);
-        this.credentialSubmit.click();
+        js.executeScript("arguments[0].click();", navCredentials);
+        js.executeScript("arguments[0].click();", addCredential);
+        js.executeScript("arguments[0].value='" + newCredentialUrl + "';", newCredentialUrl);
+        js.executeScript("arguments[0].value='" + newCredentialPassword + "';", newCredentialPassword);
+        js.executeScript("arguments[0].click();", credentialSubmit);
     }
 
-    public void setDeleteCredential() {
-        this.navCredentials.click();
-        this.deleteCredential.click();
+    public void deleteCredential() {
+      WebElement deleteCredential = wait.until(webDriver -> webDriver.findElement(By.xpath("//a[@id='nav-credentials-tab']")));
+      js.executeScript("arguments[0].click();", deleteCredential);
     }
 
 

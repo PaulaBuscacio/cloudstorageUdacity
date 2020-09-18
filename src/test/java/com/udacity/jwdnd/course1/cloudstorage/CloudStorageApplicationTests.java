@@ -2,14 +2,17 @@ package com.udacity.jwdnd.course1.cloudstorage;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CloudStorageApplicationTests {
 
+	//private static WebDriver driver;
 	String firstName = "Leticia";
 	String lastName = "Ramos";
 	String username = "Le";
@@ -36,11 +39,20 @@ class CloudStorageApplicationTests {
 	@LocalServerPort
 	private int port;
 	private static WebDriver driver;
+	private WebDriverWait wait;
+	private JavascriptExecutor js;
 
 	@BeforeAll
 	static void beforeAll() {
 		WebDriverManager.chromedriver().setup();
-		driver = new ChromeDriver();
+	}
+
+	@BeforeEach
+	public void beforeEach() {
+		this.driver = new ChromeDriver();
+		this.driver.manage().window().maximize();
+		this.wait = new WebDriverWait(driver, 60);
+		this.js = (JavascriptExecutor) driver;
 	}
 
 	@AfterAll
@@ -48,11 +60,6 @@ class CloudStorageApplicationTests {
 		Thread.sleep(5000);
 		driver.quit();
 		driver = null;
-	}
-
-	@BeforeEach
-	public void beforeEach() {
-		this.driver = new ChromeDriver();
 	}
 
 	@AfterEach
@@ -83,53 +90,24 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("Login", driver.getTitle());
 	}
 
-	@Test
-	public void fileUploadTest() {
-		driver.get("http://localhost:" + this.port + "/home");
-
-		LoginPage loginPage = new LoginPage(driver);
-		loginPage.login(username, password);
-
-		Assertions.assertEquals("Home", driver.getTitle());
-
-		HomePage homePage = new HomePage(driver);
-		homePage.uploadFile(filePath, driver);
-	}
-
-	@Test
-	public void fileViewTest() {
-		driver.get("http://localhost:" + this.port + "/home");
-
-		LoginPage loginPage = new LoginPage(driver);
-		loginPage.login(username, password);
-
-		Assertions.assertEquals("Home", driver.getTitle());
-
-		HomePage homePage = new HomePage(driver);
-		homePage.viewFile();
-	}
-
-	@Test
-	public void fileDeleteTest() {
-		driver.get("http://localhost:" + this.port + "/home");
-
-		LoginPage loginPage = new LoginPage(driver);
-		loginPage.login(username, password);
-
-		Assertions.assertEquals("Home", driver.getTitle());
-
-		HomePage homePage = new HomePage(driver);
-		homePage.deleteFile();
-	}
 
 	@Test
 	public void sendNote() throws InterruptedException {
-		driver.get("http://localhost:" + this.port + "/home");
+		driver.get("http://localhost:" + this.port + "/signup");
+
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.signup(firstName, lastName, username, password);
+
+		Assertions.assertEquals("Sign Up", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/login");
 
 		LoginPage loginPage = new LoginPage(driver);
 		loginPage.login(username, password);
 
 		Assertions.assertEquals("Home", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/home");
 
 		HomePage homePage = new HomePage(driver);
 		homePage.sendNote(title,description);
@@ -138,77 +116,128 @@ class CloudStorageApplicationTests {
 
 	@Test
 	public void updateNote() throws InterruptedException {
-		driver.get("http://localhost:" + this.port + "/home");
+
+		driver.get("http://localhost:" + this.port + "/signup");
+
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.signup(firstName, lastName, username, password);
+
+		Assertions.assertEquals("Sign Up", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/login");
 
 		LoginPage loginPage = new LoginPage(driver);
 		loginPage.login(username, password);
 
 		Assertions.assertEquals("Home", driver.getTitle());
 
-		HomePage notePageUpdate = new HomePage(driver);
-		Thread.sleep(5000);
-		notePageUpdate.updateNote(newTitle, newDescription);
-
-	}
-	@Test
-	public void deleteNote() {
 		driver.get("http://localhost:" + this.port + "/home");
 
 		HomePage homePage = new HomePage(driver);
-		homePage.deleteNote();
-
+		homePage.updateNote(newTitle, newDescription);
 	}
+
 	@Test
-	public void sendCredentialTest() {
-		driver.get("http://localhost:" + this.port + "/home");
+	public void deleteNote() throws InterruptedException {
+		driver.get("http://localhost:" + this.port + "/signup");
+
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.signup(firstName, lastName, username, password);
+
+		Assertions.assertEquals("Sign Up", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/login");
 
 		LoginPage loginPage = new LoginPage(driver);
 		loginPage.login(username, password);
 
-		Assertions.assertEquals("Login", driver.getTitle());
+		Assertions.assertEquals("Home", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/home");
+
+		HomePage homePage = new HomePage(driver);
+		homePage.sendNote(title,description);
+
+		Thread.sleep(1000);
+		homePage.deleteNote();
+	}
+
+	@Test
+	public void sendCredentialTest() {
+		driver.get("http://localhost:" + this.port + "/signup");
+
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.signup(firstName, lastName, username, password);
+
+		Assertions.assertEquals("Sign Up", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/login");
+
+		LoginPage loginPage = new LoginPage(driver);
+		loginPage.login(username, password);
+
+		Assertions.assertEquals("Home", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/home");
 
 		HomePage homePage = new HomePage(driver);
 
 		homePage.sendCredential(credentialUrl, credentialUsername, credentialPassword);
 
-		Assertions.assertEquals("Save changes", driver.getTitle());
 
 	}
 	@Test
 	public void updateCredentialTest() {
-		driver.get("http://localhost:" + this.port + "/home");
+		driver.get("http://localhost:" + this.port + "/signup");
+
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.signup(firstName, lastName, username, password);
+
+		Assertions.assertEquals("Sign Up", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/login");
 
 		LoginPage loginPage = new LoginPage(driver);
 		loginPage.login(username, password);
 
-		Assertions.assertEquals("Login", driver.getTitle());
+		Assertions.assertEquals("Home", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/home");
 
 		HomePage homePage = new HomePage(driver);
+
+		homePage.sendCredential(credentialUrl, credentialUsername, credentialPassword);
 
 		homePage.updateCredential(newCredentialUrl, newCredentialUsername, newCredentialPassword);
-
-		Assertions.assertEquals("Save changes", driver.getTitle());
-
 	}
 	@Test
-	public void deleteCredentialTest() {
-		driver.get("http://localhost:" + this.port + "/home");
+	public void deleteCredentialTest() throws InterruptedException {
+		driver.get("http://localhost:" + this.port + "/signup");
+
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.signup(firstName, lastName, username, password);
+
+		Assertions.assertEquals("Sign Up", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/login");
 
 		LoginPage loginPage = new LoginPage(driver);
 		loginPage.login(username, password);
 
-		Assertions.assertEquals("Login", driver.getTitle());
+		Assertions.assertEquals("Home", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/home");
 
 		HomePage homePage = new HomePage(driver);
 
-		homePage.setDeleteCredential();
+		homePage.sendCredential(credentialUrl, credentialUsername, credentialPassword);
+		Thread.sleep(3000);
 
-		Assertions.assertEquals("Delete", driver.getTitle());
-
+		//driver.get("http://localhost:" + this.port + "/home");
+		//WebElement deleteCredential = wait.until(webDriver -> webDriver.findElement(By.xpath("//a[@id='delete-credential'")));
+		homePage.deleteCredential();
+		//Assertions.assertEquals("Delete", driver.getTitle());
 
 	}
-
-
-
 
 }
